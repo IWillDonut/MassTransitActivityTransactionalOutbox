@@ -1,0 +1,21 @@
+﻿version: "3.6"
+services:
+  rabbitmq:
+    image: masstransit/rabbitmq:latest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    environment:
+      SA_PASSWORD: 'yourStrong(!)Password'
+      ACCEPT_EULA: 'Y'
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "yourStrong(!)Password" -Q "SELECT 1" || exit 1
+      interval: 5s
+      retries: 10
+      start_period: 10s
+      timeout: 5s
+    ports:
+      - '1433:1433'
